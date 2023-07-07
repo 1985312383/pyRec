@@ -160,4 +160,5 @@ cython_debug/
 #.idea/
 
 # MIND datasets
-pyRec/code/training/datasets/*
+*.tsv
+*.vec
