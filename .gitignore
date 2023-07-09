@@ -162,3 +162,5 @@ cython_debug/
 # MIND datasets
 *.tsv
 *.vec
+*.txt
+*.jpg

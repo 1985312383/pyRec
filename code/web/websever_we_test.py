@@ -1,12 +1,81 @@
-from flask import Flask, escape, url_for, render_template, send_from_directory
+from flask import Flask, escape, url_for, render_template, send_from_directory, request
 import os
 # import get_data
 import pandas as pd
+import json
 
 app = Flask(__name__)
 
 
+def get_news(news_ids):
+    details = []
+    for news_id in news_ids:
+        path = "./code/web/static/news_data/"
+        with open(path + "news_abstract/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+            data = f.read()  # 读取文本
+            data = data.split('\t')
+        # data = pd.read_csv(path + "news_abstract/" + news_id + ".txt", sep='\t')
+        # print(data)
+        category = data[0]
+        title = data[2]
+        try:
+            abstract = data[3]
+        except:
+            abstract = ""
+        with open(path + "news_author/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+            data = f.read()  # 读取文本
+            data = data.split('\t')
+            author = data[0]  # 读取文本
+            date = data[1]
+        # with open(path + "news/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+        #     data = f.read()  # 读取文本
+        path = "./static/news_data/"
+        image = path + "news_img/" + news_id + ".jpg"
+        detail = {
+            'title': title,
+            'category': category,
+            'abstract': abstract,
+            'author': author,
+            'image': image,
+            'id': news_id
+        }
+        details.append(detail)
+    return details
 
+
+def get_news_details(news_id):
+    path = "./code/web/static/news_data/"
+    with open(path + "news_abstract/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+        data = f.read()  # 读取文本
+        data = data.split('\t')
+    # data = pd.read_csv(path + "news_abstract/" + news_id + ".txt", sep='\t')
+    # print(data)
+    category = data[0]
+    title = data[2]
+    try:
+        abstract = data[3]
+    except:
+        abstract = ""
+    with open(path + "news_author/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+        data = f.read()  # 读取文本
+        data = data.split('\t')
+        author = data[0]  # 读取文本
+        date = data[1]
+    with open(path + "news/" + news_id + ".txt", "r", encoding='utf-8') as f:  # 打开文本
+        content = f.read()  # 读取文本
+    path = "./static/news_data/"
+    image = path + "news_img/" + news_id + ".jpg"
+    detail = {
+        'title': title,
+        'category': category,
+        'abstract': abstract,
+        'author': author,
+        'image': image,
+        'id': news_id,
+        'content': content,
+        'date': date
+    }
+    return [detail]
 
 
 @app.route('/')
@@ -14,38 +83,25 @@ def index():
     # news_ids = ['N1']
     # for news_id in news_ids:
     news_ids = ['N1', 'N2']
-    # news_details = get_data.get_news(news_ids)
-    news_details = [
-        {"title": "Texans defensive tackle D.J. Reader is taking advantage of his opportunities", "category": "sports",
-         "abstract": "Houston Texans defensive tackle D.J. Reader is taking advantage of opportunities given by defensive end J.J. Watt.\n",
-         "author": "Avery Duncan\t10/17/2019\n", "image": "static/news_data/news_img/N1.jpg"},
-        {"title": "Mormons to the Rescue?", "category": "news",
-         "abstract": "The one religious faith that is the most heavily Republican is somewhat disgusted with Trump. Barely half the members of the American-grown Church of Jesus Christ of Latter-day Saints approve of his presidency.\n",
-         "author": "Timothy Egan\t10/12/2019\n", "image": "static/news_data/news_img/N2.jpg"}]
-
+    news_details = get_news(news_ids)
     data = news_details
-    # data = [
-    #     {
-    #         'title': 'pang pang yuanyuan',
-    #         'category': 'sport',
-    #         'abstract': 'pang pang yuanyuan xxxx',
-    #         'author': 'xiaoran',
-    #         'image': '../data/pang_yuan.jpg'
-    #     },
-    #     {
-    #         'title': 'pang pang yuanyuan 22',
-    #         'category': 'sport 2',
-    #         'abstract': 'pang pang yuanyuan xxxx 222',
-    #         'author': 'xiaoran-2',
-    #         'image': '../data/pang_yuan_2.jpg'
-    #     },
-    # ]
     return render_template('index.html', data=data)
 
 
-@app.route('/login')
-def login():
-    return 'login'
+@app.route('/news')
+def news():
+    news_id = request.args.get('news_id')
+    print("xiaorna-news_id", news_id)
+    print("news_id", news_id)
+    # news_client = NewsClient()
+    # news_details = news_client.get_news_detail(news_ids=news_id)
+    news_details = get_news_details(news_id)
+    data = news_details
+    return render_template('news.html', data=data)
+
+# @app.route('/login')
+# def login():
+#     return 'login'
 
 
 # @app.route('/favicon.ico')
@@ -63,7 +119,7 @@ def login():
 # set FLASK_APP=code/web/websever_we_test.py
 # flask run
 
-if __name__ == '__main__':
-    news_ids = ['N1', 'N2']
-    news_details = get_news(news_ids)
-    print(news_details)
+# if __name__ == '__main__':
+#     news_ids = ['N1', 'N2']
+#     news_details = get_news(news_ids)
+#     print(news_details)
