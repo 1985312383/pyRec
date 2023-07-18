@@ -3,6 +3,9 @@ import os
 # import get_data
 import pandas as pd
 import json
+import random
+import thriftpy2
+from thriftpy2.rpc import make_client
 
 app = Flask(__name__)
 
@@ -80,19 +83,38 @@ def get_news_details(news_id):
 
 @app.route('/')
 def index():
+    user_i = random.randint(1, 10000)
     # news_ids = ['N1']
     # for news_id in news_ids:
-    news_ids = ['N1', 'N2']
-    news_details = get_news(news_ids)
-    data = news_details
-    return render_template('index.html', data=data)
+    # news_ids = RecommendClient(user_i)
+    CatItem_thrift = thriftpy2.load("code/web/cat_item.thrift", module_name="CatItem_thrift")
+    client = make_client(CatItem_thrift.CatItemService, '127.0.0.1', 6001)
+    news_details = client.items(user_i)
+    datas = []
+    for i in range(len(news_details.title)):
+        data = {
+            'title': news_details.title[i],
+            'category': news_details.category[i],
+            'abstract': news_details.abs[i],
+            'author': news_details.author[i],
+            'date': news_details.date[i],
+            'id': news_details.iid[i],
+            # 'content': news_details.content[i],
+            'image': news_details.image[i],
+        }
+        datas.append(data)
+
+    # news_ids = ['N1', 'N2']
+    # news_details = get_news(news_ids)
+
+    return render_template('index.html', data=datas)
 
 
 @app.route('/news')
 def news():
     news_id = request.args.get('news_id')
-    print("xiaorna-news_id", news_id)
-    print("news_id", news_id)
+    # print("xiaorna-news_id", news_id)
+    # print("news_id", news_id)
     # news_client = NewsClient()
     # news_details = news_client.get_news_detail(news_ids=news_id)
     news_details = get_news_details(news_id)

@@ -27,7 +27,7 @@ def index():
     user_id = request.args.get('user_id')
 
     # 1.1 由于我们的用户来自数据日志，可以从全部的数据中随机抽取用户uid，并且生成req_id，传到下游
-    uids, req_ids = select_batch_uids(session['refresh_count'], all_dev_uids, k=10)
+    uids, req_ids = select_batch_ui ds(session['refresh_count'], all_dev_uids, k=10)
 
     # print("user_ids", uids)
     # 2. 请求后端的服务，拿到返回的结果，这个服务后面搭建，可以先生成mock的数据

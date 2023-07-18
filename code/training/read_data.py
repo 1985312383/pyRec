@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def read_data(mode='train', dataset='behaviors'):
+def read_data(mode='train', dataset='behaviors', nrows=None):
     if mode == 'train' or mode == 'test' or mode == 'val':
         temp_dir = "./datasets/" + mode
     else:
@@ -20,7 +20,8 @@ def read_data(mode='train', dataset='behaviors'):
         behaviors = pd.read_table(
             behaviors_path,
             header=None,
-            names=['impression_id', 'user_id', 'time', 'history', 'impressions'])
+            names=['impression_id', 'user_id', 'time', 'history', 'impressions'],
+            nrows=nrows)
         return behaviors
 
     elif dataset == 'news':
@@ -67,7 +68,6 @@ def read_data(mode='train', dataset='behaviors'):
         return relation_embedding
     else:
         raise Exception('Do not have this dataset, please check your input!')
-
 
 # if __name__ == '__main__':
 #     read_data(mode='ff', dataset='be')  # 报错测试
