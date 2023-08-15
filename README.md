@@ -8,6 +8,8 @@
 
 ## 架构
 
+![Alt text](image.png)
+
 > web->flask
 > 
 > recall-> FM
